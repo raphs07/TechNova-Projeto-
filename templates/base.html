@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TechNova SGC{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        /* 🎨 IDENTIDADE VISUAL TECHNOVA - DARK PREMIUM */
+        :root {
+            --primary-color: #0F172A;   /* Fundo escuro geral */
+            --secondary-color: #1E293B; /* Grafite profissional (Sidebar/Navbar) */
+            --accent-color: #A855F7;    /* Roxo Neon principal */
+            --accent-hover: #9333EA;    /* Roxo Neon mais escuro para o hover */
+            --text-main: #F1F5F9;       /* Texto claro */
+            --text-muted: #94A3B8;      /* Texto secundário cinza */
+            --border-color: #334155;    /* Bordas sutis */
+            --danger-color: #F43F5E;    /* Rosa/Vermelho para alertas de erro */
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Navbar Superior */
+        .navbar-custom {
+            background-color: var(--secondary-color) !important;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+        }
+
+        .navbar-custom .navbar-brand {
+            color: #FFFFFF !important;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-custom .navbar-text {
+            color: var(--text-muted) !important;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Barra Lateral (Sidebar) */
+        .sidebar {
+            background-color: var(--secondary-color);
+            min-height: 100vh;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 10px 0 30px -15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Links da Navegação Interna */
+        .sidebar .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 12px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #243249 !important;
+            color: #FFFFFF !important;
+            transform: translateX(4px);
+        }
+
+        .sidebar .nav-link.active {
+            color: #FFFFFF !important;
+            background-color: var(--accent-color) !important;
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+        }
+
+        /* 💎 ESTILIZAÇÃO DO MODAL DE FEEDBACK GLOBAL */
+        .modal-feedback {
+            background-color: var(--secondary-color) !important;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            color: var(--text-main);
+        }
+
+        .modal-feedback .btn-feedback-ok {
+            height: 48px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            transition: all 0.2s ease;
+            border: none;
+            color: #FFFFFF;
+        }
+
+        .modal-feedback .btn-feedback-ok:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .text-sucesso {
+            color: var(--accent-color) !important;
+        }
+
+        .text-erro {
+            color: var(--danger-color) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/dashboard/">
+                <i class="bi bi-cpu text-purple" style="color: var(--accent-color);"></i> TechNova SGC
+            </a>
+            <span class="navbar-text">Painel de Controle</span>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar p-4">
+                <div class="position-sticky">
+                    <ul class="nav flex-column gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link p-3" id="menu-dashboard" href="/dashboard/">
+                                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link p-3" id="menu-clientes" href="/clientes/">
+                                <i class="bi bi-people-fill"></i> Clientes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link p-3" id="menu-produtos" href="/produtos/">
+                                <i class="bi bi-box-seam-fill"></i> Produtos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link p-3" id="menu-vendas" href="/vendas/">
+                                <i class="bi bi-currency-dollar"></i> Vendas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-10 ms-sm-auto px-md-5 py-5">
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalFeedback" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content modal-feedback">
+                <div class="modal-body text-center p-4">
+                    <div id="feedback-icone" class="fs-1 mb-2"></div>
+                    
+                    <h4 id="feedback-titulo" class="fw-bold mb-2">Aviso</h4>
+                    
+                    <p id="feedback-mensagem" style="font-size: 14px; color: var(--text-muted); line-height: 1.5;"></p>
+                    
+                    <button type="button" id="feedback-btn" class="btn btn-feedback-ok w-100 mt-2" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONTROLE DOS MENUS ATIVOS ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const path = window.location.pathname;
+            if (path.includes('/dashboard/')) {
+                document.getElementById('menu-dashboard')?.classList.add('active');
+            } else if (path.includes('/clientes/')) {
+                document.getElementById('menu-clientes')?.classList.add('active');
+            } else if (path.includes('/produtos/')) {
+                document.getElementById('menu-produtos')?.classList.add('active');
+            } else if (path.includes('/vendas/')) {
+                document.getElementById('menu-vendas')?.classList.add('active');
+            }
+        });
+
+        // --- FUNÇÃO GLOBAL DE NOTIFICAÇÃO (CHAMADA POR QUALQUER TELA FILHA) ---
+        function exibirNotificacao(titulo, mensagem, tipo = 'sucesso') {
+            const modalElement = document.getElementById('modalFeedback');
+            const tituloEl = document.getElementById('feedback-titulo');
+            const mensagemEl = document.getElementById('feedback-mensagem');
+            const btnEl = document.getElementById('feedback-btn');
+            const iconeEl = document.getElementById('feedback-icone');
+
+            tituloEl.innerText = titulo;
+            mensagemEl.innerText = mensagem;
+
+            if (tipo === 'sucesso') {
+                tituloEl.className = "fw-bold mb-2 text-sucesso";
+                iconeEl.innerHTML = '<i class="bi bi-check-circle-fill text-sucesso"></i>';
+                btnEl.style.backgroundColor = "var(--accent-color)";
+            } else {
+                tituloEl.className = "fw-bold mb-2 text-erro";
+                iconeEl.innerHTML = '<i class="bi bi-exclamation-triangle-fill text-erro"></i>';
+                btnEl.style.backgroundColor = "var(--danger-color)";
+            }
+
+            // Exibe o modal na tela usando a instância global do Bootstrap
+            const bModal = new bootstrap.Modal(modalElement);
+            bModal.show();
+        }
+    </script>
+</body>
+</html>

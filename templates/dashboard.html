@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - TechNova{% endblock %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* ==========================================
+       DASHBOARD PREMIUM DARK TECH + GRÁFICOS
+       ========================================== */
+
+    body {
+        background-color: #0F172A; /* Azul grafite ultra escuro */
+        color: #F1F5F9;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Cabeçalho */
+    .dashboard-header {
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #1E293B;
+    }
+
+    .dashboard-header h1 {
+        color: #FFFFFF;
+        font-weight: 800;
+        font-size: 2.25rem;
+        letter-spacing: -0.025em;
+        margin-bottom: 6px;
+    }
+
+    .dashboard-header p {
+        color: #94A3B8;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    /* Botão de Alternar Visualização */
+    .btn-toggle-view {
+        background-color: #1E293B;
+        border: 1px solid #334155;
+        color: #CBD5E1;
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.25s ease;
+    }
+    .btn-toggle-view:hover {
+        background-color: #243249;
+        border-color: #A855F7;
+        color: #FFFFFF;
+    }
+    .btn-toggle-view i {
+        color: #A855F7;
+    }
+
+    /* Cards Estilizados */
+    .dashboard-card {
+        background: #1E293B; 
+        border: 1px solid #334155; 
+        border-radius: 20px; 
+        overflow: hidden;
+        padding: 4px;
+        height: 100%;
+        transition: all .35s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        position: relative;
+    }
+
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-6px);
+        border-color: #475569;
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+    }
+
+    .dashboard-card .card-body {
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .dashboard-card .card-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        margin-bottom: 16px;
+    }
+
+    .dashboard-card .card-text {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.03em;
+    }
+
+    /* Cores Customizadas dos Cards */
+    .card-blue { color: #E2E8F0; }
+    .card-blue::before { background: #A855F7; } 
+    .card-blue .card-title { color: #C084FC; }   
+    .card-blue .card-text { color: #FFFFFF; text-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+
+    .card-green { color: #E2E8F0; }
+    .card-green::before { background: #22C55E; } 
+    .card-green .card-title { color: #4ADE80; }  
+    .card-green .card-text { color: #FFFFFF; text-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+
+    .card-yellow { color: #E2E8F0; }
+    .card-yellow::before { background: #6366F1; } 
+    .card-yellow .card-title { color: #818CF8; }  
+    .card-yellow .card-text { color: #FFFFFF; text-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+
+    /* Container do Gráfico */
+    .chart-container-card {
+        background: #1E293B;
+        border: 1px solid #334155;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .chart-title {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #C084FC;
+        margin-bottom: 25px;
+    }
+
+    /* Transição suave para alternar as formas de visualização */
+    .fade-view {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .d-none-custom {
+        display: none !important;
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    /* Rodapé Profissional */
+    .footer-dashboard {
+        margin-top: 60px;
+        padding: 24px 0;
+        text-align: center;
+        border-top: 1px solid #1E293B;
+        color: #64748B;
+        font-size: 13px;
+        letter-spacing: 0.05em;
+    }
+</style>
+
+<div class="dashboard-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Bem-vindo(a) ao sistema de gestão analítica.</p>
+    </div>
+    <button class="btn btn-toggle-view" id="btn-mudar-visao" onclick="alternarVisualizacao()">
+        <i class="bi bi-graph-up me-2" id="icone-visao"></i> <span id="texto-visao">Ver em Gráfico</span>
+    </button>
+</div>
+
+<div id="visao-cards" class="fade-view">
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card dashboard-card card-blue">
+                <div class="card-body">
+                    <h5 class="card-title">Faturamento Total</h5>
+                    <h2 class="card-text" id="fat-total">R$ 0,00</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card card-green">
+                <div class="card-body">
+                    <h5 class="card-title">Vendas Realizadas</h5>
+                    <h2 class="card-text" id="qtd-vendas">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card dashboard-card card-yellow">
+                <div class="card-body">
+                    <h5 class="card-title">Itens Comercializados</h5>
+                    <h2 class="card-text" id="qtd-itens">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="visao-grafico" class="fade-view d-none-custom">
+    <div class="row">
+        <div class="col-12">
+            <div class="chart-container-card">
+                <div class="chart-title"><i class="bi bi-bar-chart-fill me-2"></i> Distribuição Comercial Periódica</div>
+                <div style="position: relative; height:320px; width:100%">
+                    <canvas id="meuGraficoDashboard"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer-dashboard">
+    TechNova SGC © 2026 • Todos os direitos reservados. v1.0.0
+</div>
+
+<script>
+    // Recupera dinamicamente o Token ativo do escopo global que você utilizou nas vendas corrigidas
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMjYyNTg5LCJpYXQiOjE3ODAyNjIyOTAsImp0aSI6IjFhNWExYTFlNGEwNDQwNWU5ODM2OTk3NjFhY2FhZTIyIiwidXNlcl9pZCI6IjEifQ.9Eu45IXObTI4oshr972wqb1QfMnRHUvnVxqRqKIzdNk";
+    let instanciaGrafico = null; 
+    let modoAtual = "cards"; 
+
+    let dadosGlobais = { faturamento: 0, vendas: 0, itens: 0 };
+
+    async function carregarDashboard() {
+        try {
+            const response = await fetch(
+                'http://127.0.0.1:8000/api/relatorios/dashboard/',
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.ok) {
+                const dados = await response.json();
+
+                // Garante que se o backend retornar nulo ou undefined, exiba zero de forma amigável
+                dadosGlobais.faturamento = parseFloat(dados.faturamento_total) || 0;
+                dadosGlobais.vendas = parseInt(dados.total_vendas_realizadas) || 0;
+                dadosGlobais.itens = parseInt(dados.total_itens_comercializados) || 0;
+
+                // 1. Atualiza os componentes do Modo Cards com formatação pt-BR correta
+                document.getElementById('fat-total').innerText = 'R$ ' + dadosGlobais.faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                document.getElementById('qtd-vendas').innerText = dadosGlobais.vendas.toLocaleString('pt-BR');
+                document.getElementById('qtd-itens').innerText = dadosGlobais.itens.toLocaleString('pt-BR');
+
+                // 2. Inicializa ou Atualiza o Gráfico em background sem sobrepor elementos antigos
+                renderizarGrafico(dadosGlobais);
+            } else {
+                console.warn("Retorno inválido da API de Relatórios. Verifique a autenticação.");
+            }
+
+        } catch (erro) {
+            console.error("Erro ao buscar dados do relatório:", erro);
+        }
+    }
+
+    function renderizarGrafico(dados) {
+        const canvasElement = document.getElementById('meuGraficoDashboard');
+        if (!canvasElement) return;
+        
+        const ctx = canvasElement.getContext('2d');
+
+        if (instanciaGrafico) {
+            instanciaGrafico.destroy();
+        }
+
+        instanciaGrafico = new Chart(ctx, {
+            type: 'bar', 
+            data: {
+                labels: ['Faturamento (R$)', 'Vendas (Qtd)', 'Itens (Qtd)'],
+                datasets: [{
+                    label: 'Métricas Atuais',
+                    data: [dados.faturamento, dados.vendas, dados.itens],
+                    backgroundColor: [
+                        'rgba(168, 85, 247, 0.45)',  
+                        'rgba(34, 197, 94, 0.45)',   
+                        'rgba(99, 102, 241, 0.45)'   
+                    ],
+                    borderColor: [
+                        '#A855F7', 
+                        '#22C55E', 
+                        '#6366F1'  
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8, 
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false 
+                    },
+                    tooltip: {
+                        backgroundColor: '#1E293B',
+                        titleColor: '#A855F7',
+                        bodyColor: '#F1F5F9',
+                        borderColor: '#334155',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#1E293B' 
+                        },
+                        ticks: {
+                            color: '#94A3B8',
+                            font: { family: 'Inter' }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false 
+                        },
+                        ticks: {
+                            color: '#94A3B8',
+                            font: { family: 'Inter', weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function alternarVisualizacao() {
+        const telaCards = document.getElementById('visao-cards');
+        const telaGrafico = document.getElementById('visao-grafico');
+        const textoBotao = document.getElementById('texto-visao');
+        const iconeBotao = document.getElementById('icone-visao');
+
+        if (modoAtual === "cards") {
+            telaCards.classList.add('d-none-custom');
+            telaGrafico.classList.remove('d-none-custom');
+            textoBotao.innerText = "Ver em Cards";
+            iconeBotao.className = "bi bi-grid-fill me-2";
+            modoAtual = "grafico";
+            
+            // Força o Chart.js a recalcular as dimensões ao exibir para evitar bugs de renderização achatada
+            if(instanciaGrafico) {
+                instanciaGrafico.resize();
+            }
+        } else {
+            telaGrafico.classList.add('d-none-custom');
+            telaCards.classList.remove('d-none-custom');
+            textoBotao.innerText = "Ver em Gráfico";
+            iconeBotao.className = "bi bi-graph-up me-2";
+            modoAtual = "cards";
+        }
+    }
+
+    // Executa imediatamente ao abrir e liga uma escuta caso sua aplicação mude de rota dinamicamente
+    document.addEventListener("DOMContentLoaded", carregarDashboard);
+    window.onload = carregarDashboard;
+</script>
+
+{% endblock %}
