@@ -488,11 +488,12 @@ O projeto utiliza Django e Django REST Framework para garantir organização, ma
 ---
 
 ##PARTICIPANTES DO GRUPO:
-Anna Beatriz
+
+Anna Beatriz Pereira da Silva
 
 Elaine Barbosa da Silva
 
-Raphaela Pereira
+Raphaela Pereira de Sousa
 
 Vitória de Sousa Melo
 
