@@ -131,7 +131,7 @@
         color: white;
     }
 
-    /* Botões de Ação Dinâmicos (IGUAIS À FOTO) */
+    /* Botões de Ação Dinâmicos */
     .btn-action {
         width: 38px;
         height: 38px;
@@ -295,12 +295,12 @@
 
                     <div class="mb-3">
                         <label for="email" class="form-label">E-mail</label>
-                        <input type="email" class="form-control form-control-modal" id="email" placeholder="exemplo@email.com">
+                        <input type="email" class="form-control form-control-modal" id="email" placeholder="exemplo@email.com" required>
                     </div>
 
                     <div class="mb-2">
                         <label for="telefone" class="form-label">Telefone</label>
-                        <input type="text" class="form-control form-control-modal input-tel-mask" id="telefone" placeholder="(00) 00000-0000">
+                        <input type="text" class="form-control form-control-modal input-tel-mask" id="telefone" placeholder="(00) 00000-0000" required>
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 p-4 pt-0">
@@ -334,12 +334,12 @@
 
                     <div class="mb-3">
                         <label for="editar-email" class="form-label">E-mail</label>
-                        <input type="email" class="form-control form-control-modal" id="editar-email">
+                        <input type="email" class="form-control form-control-modal" id="editar-email" required>
                     </div>
 
                     <div class="mb-2">
                         <label for="editar-telefone" class="form-label">Telefone</label>
-                        <input type="text" class="form-control form-control-modal input-tel-mask" id="editar-telefone">
+                        <input type="text" class="form-control form-control-modal input-tel-mask" id="editar-telefone" required>
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 p-4 pt-0">
@@ -352,12 +352,12 @@
 </div>
 
 <div class="modal fade" id="modalConfirmarExcluir" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content modal-custom-dark text-center">
             <div class="modal-body p-4">
                 <i class="bi bi-exclamation-triangle-fill text-danger mb-3" style="font-size: 2.5rem;"></i>
                 <h6 class="fw-bold text-white mb-2" style="font-size: 1.1rem;">Confirmar Exclusão</h6>
-                <p class="text-muted small mb-4">Você tem certeza que deseja realmente remover este cliente do sistema?</p>
+               <p class="text-white small mb-2">Você tem certeza que deseja realmente remover este cliente do sistema?</p>
                 
                 <div class="d-flex gap-2 justify-content-center">
                     <button type="button" class="btn text-white btn-sm px-3" data-bs-dismiss="modal" style="background: #334155; height: 38px; border-radius: 8px;">Não</button>
@@ -420,6 +420,19 @@
         return cleanCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     }
 
+    // --- FUNÇÃO AUXILIAR DE VALIDAÇÃO DE CPF ---
+    function validarFormatoCPF(cpfLimpo) {
+        if (cpfLimpo.length < 11) {
+            exibirNotificacao("Erro de Validação", "O CPF deve conter exatamente 11 números.", "erro");
+            return false;
+        }
+        if (cpfLimpo === "00000000000") {
+            exibirNotificacao("Erro de Validação", "O CPF não pode ser composto apenas por zeros.", "erro");
+            return false;
+        }
+        return true;
+    }
+
     async function carregarClientes() {
         try {
             const response = await fetch('/api/clientes/', {
@@ -436,7 +449,6 @@
         }
     }
 
-    // --- RENDERIZAR TABELA COM OS NOVOS ÍCONES DE LÁPIS E LIXEIRA ---
     function renderizarTabela(lista) {
         const tbody = document.getElementById('tabela-clientes');
         tbody.innerHTML = '';
@@ -492,9 +504,15 @@
     document.getElementById('filtro-cpf').addEventListener('input', aplicarFiltros);
     document.getElementById('filtro-telefone').addEventListener('input', aplicarFiltros);
 
+    // --- FORMULÁRIO DE CADASTRO ---
     document.getElementById('form-cliente').addEventListener('submit', async (e) => {
         e.preventDefault();
         const cpfLimpo = document.getElementById('cpf').value.replace(/\D/g, '');
+
+        // Executa a validação personalizada do CPF
+        if (!validarFormatoCPF(cpfLimpo)) {
+            return; 
+        }
 
         const dadosCliente = {
             nome: document.getElementById('nome').value,
@@ -548,10 +566,16 @@
         }
     }
 
+    // --- FORMULÁRIO DE EDIÇÃO ---
     document.getElementById('form-editar-cliente').addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('editar-id').value;
         const cpfLimpo = document.getElementById('editar-cpf').value.replace(/\D/g, '');
+
+        // Executa a validação personalizada do CPF
+        if (!validarFormatoCPF(cpfLimpo)) {
+            return; 
+        }
 
         const dadosAtualizados = {
             nome: document.getElementById('editar-nome').value,
@@ -572,7 +596,7 @@
 
             if (response.ok) {
                 bootstrap.Modal.getInstance(document.getElementById('modalEditarCliente')).hide();
-                exibirNotificacao("Atualizado!", "Dados do cliente atualizados com sucesso.", "sucesso");
+                exibirNotificacao("Atualizado!", "Dados do cliente updated com sucesso.", "sucesso");
                 carregarClientes();
             } else {
                 const erros = await response.json();
