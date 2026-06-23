@@ -80,7 +80,6 @@ Responsável pelo armazenamento e persistência das informações.
 
 Tecnologias:
 - SQLite
-- PostgreSQL
 
 ---
 
@@ -92,7 +91,6 @@ Tecnologias:
 | Django | Framework Web |
 | Django REST Framework | API REST |
 | SQLite | Banco de dados local |
-| PostgreSQL | Banco de dados produção |
 | JWT | Autenticação |
 | Git | Controle de versão |
 | GitHub | Hospedagem do repositório |
